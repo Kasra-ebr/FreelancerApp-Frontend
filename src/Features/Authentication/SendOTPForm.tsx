@@ -22,7 +22,7 @@ function SendOTPForm({ isSendingOtp, onSubmit, phoneNumber, onChange }: SendOTPF
         />
         <div className="flex justify-center">
           {isSendingOtp ? (
-            <Loading />
+            <Loading height={80 } width={80} />
           ) : (
             <Button type="submit" className="btn">
               Submit

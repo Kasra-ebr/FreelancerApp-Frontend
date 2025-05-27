@@ -1,17 +1,46 @@
 import React, { useState } from "react";
+import { toast } from "react-hot-toast";
+import { useMutation } from "@tanstack/react-query";
 import TextField from "../../UI/TextField";
 import Button from "../../UI/Button";
-
 import RadioInput from "../../UI/RadioInput";
+import Loading from "../../UI/Loading";
+import { completeProfile } from "../../Server/authServices";
+import { useNavigate } from "react-router-dom";
 
 function CompleteProfileForm() {
   const [name, setName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [role, setRole] = useState<string>("");
 
-  const submitHandler = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-  }
+  const navigate = useNavigate();
+
+  const { mutateAsync, isPending } = useMutation({
+    mutationFn: completeProfile,
+  });
+
+  const submitHandler = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      const { message, user } = await mutateAsync({ name, email, role });
+      toast.success(message);
+
+      if (user.status !== 2) {
+        navigate("/");
+        toast.error("Please wait to authenticate your profile");
+        return;
+      }
+
+      if (user.role === "OWNER") return navigate("/Owner");
+      if (user.role === "FREELANCER") return navigate("/Freelancer");
+    } catch (error: any) {
+      toast.error(
+        error?.response?.data?.message ||
+          "Failed to verify OTP. Please try again."
+      );
+    }
+  };
+
   return (
     <div className="flex justify-center pt-10">
       <div className="w-full sm:max-w-sm">
@@ -24,7 +53,7 @@ function CompleteProfileForm() {
           />
           <TextField
             label="Email"
-            name="role"
+            name="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
@@ -43,10 +72,18 @@ function CompleteProfileForm() {
               id="FREELANCER"
               label="Freelancer"
               onChange={(e) => setRole(e.target.value)}
-               checked={role === "FREELANCER"}
+              checked={role === "FREELANCER"}
             />
           </div>
-          <Button className="btn btn-primary w-full">Complete</Button>
+          <div className="flex justify-center">
+            {isPending ? (
+              <Loading height={80} width={80} />
+            ) : (
+              <Button type="submit" className="btn">
+                Submit
+              </Button>
+            )}
+          </div>
         </form>
       </div>
     </div>
@@ -54,14 +91,3 @@ function CompleteProfileForm() {
 }
 
 export default CompleteProfileForm;
-
-
-
-
-/* So every radio button has:
-
-The same name (e.g., "role") so the browser groups them.
-
-A unique value (e.g., "OWNER" or "FREELANCER").
-
-A checked prop that React sets to true for the one that matches the current state. */

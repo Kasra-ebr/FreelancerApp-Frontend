@@ -2,7 +2,7 @@ import React from 'react'
 
 function Home() {
   return (
-    <div>Home</div>
+    <div className="container xl:max-w-screen-xl mx-auto px-4 ">Home</div>
   )
 }
 
