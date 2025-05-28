@@ -17,7 +17,7 @@ interface CheckOTPFormProps {
 
 function CheckOTPForm({ phoneNumber, onBack, onReSendOtp, otpResponse,}: CheckOTPFormProps) {
   const [otp, setOtp] = useState<string>("");
-  const [time, setTime] = useState(3); // usually timer in seconds, you had 2 (seconds)?
+  const [time, setTime] = useState(3);
   const navigate = useNavigate();
   const { mutateAsync } = useMutation({ mutationFn: checkOTP });
 

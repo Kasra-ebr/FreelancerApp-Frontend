@@ -1,10 +1,8 @@
 import React from 'react'
-import ProjectTable from '../Features/Authentication/Projects/ProjectTable'
+import ProjectTable from '../Features/Projects/ProjectTable'
 
 function Projects() {
-  return (
-  <> <ProjectTable/></>
-  )
+  return <ProjectTable/>
 }
 
 export default Projects
