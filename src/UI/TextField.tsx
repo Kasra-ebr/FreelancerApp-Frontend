@@ -1,30 +1,44 @@
 import React from "react";
-import Input from "./Input";
 
 interface ITextField {
   name: string;
   label: string;
-  value: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  type?: string;
+  required?: boolean;
+  register: any;
+  validationSchema: any;
+  errors: Record<string, any>;
 }
 
-function TextField({ name, label, value, onChange }:ITextField) {
+function TextField({
+  name,
+  label,
+  register,
+  validationSchema,
+  type = "text",
+  required,
+  errors,
+}: ITextField) {
   return (
     <div>
       <label
         htmlFor={name}
         className="block text-sm font-medium text-gray-700 mb-2"
       >
-        {label}
+        {label} {required && <span className="text-error">*</span>}
       </label>
-      <Input
-        value={value}
+      <input
+        {...register(name, validationSchema)}
         id={name}
-        onChange={onChange}
-        type="text"
+        type={type}
         className="textField__input"
-        placeholder="e.g. +1 416 123 4567"
+        autoComplete="off"
       />
+      {errors[name] && (
+        <span className="text-error block text-sm mt-2">
+          {errors[name]?.message}
+        </span>
+      )}
     </div>
   );
 }

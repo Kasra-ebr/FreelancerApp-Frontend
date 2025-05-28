@@ -3,8 +3,8 @@ import useOwnerProjects from "./useOwnerProjects";
 import Loading from "../../UI/Loading";
 import Empty from "../../UI/Empty";
 
-import { Table, Header, Body } from "../../utils/Table";
 import ProjectRow from "./ProjectRow";
+import Table from "../../utils/Table";
 
 function ProjectTable() {
   const { isLoading, projects } = useOwnerProjects();

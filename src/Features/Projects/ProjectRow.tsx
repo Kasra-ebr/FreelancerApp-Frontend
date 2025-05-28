@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import truncateText from "../../../utils/truncateText"; // fixed typo
+
 import Button from "../../UI/Button";
 import { TbPencilMinus } from "react-icons/tb";
 import { HiOutlineTrash } from "react-icons/hi";
@@ -15,7 +15,7 @@ interface ProjectRowProps {
 function ProjectRow({ project, index }: ProjectRowProps) {
   const [isEditOpen, setIsEditOpen] = useState<boolean>(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState<boolean>(false);
-  const {data,isPending,mutateAsync} = useRemoveProject()
+  const {removeProject,isPending,mutateAsync} = useRemoveProject()
   return (
     <>
       <tr className="border-t">
@@ -70,7 +70,9 @@ function ProjectRow({ project, index }: ProjectRowProps) {
               >
                 <ConfirmDelete
                  resourceName={project.title} 
-                 onConfirm={()=> } 
+                 onConfirm={()=> removeProject(project._id, {
+                  onSuccess: ()=> setIsDeleteOpen(false)
+                 }) } 
                  disabled ={false}
                  onClose={()=>setIsDeleteOpen(false)} />
               </Modal>

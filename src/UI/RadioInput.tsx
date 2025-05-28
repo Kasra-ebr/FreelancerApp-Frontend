@@ -1,26 +1,34 @@
 import React from "react";
-import Input from "./Input";
 
 interface IRadioInput {
   name: string;
   value: string;
   id: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   label: string;
-  checked:boolean
+  watch: any;
+  register: any;
+  validationSchema: any;
 }
 
-function RadioInput({ name, value, id, onChange, label,checked }: IRadioInput) {
+function RadioInput({
+  name,
+  value,
+  id,
+  label,
+  validationSchema,
+  register,
+  watch,
+}: IRadioInput) {
   return (
     <div className="flex items-center gap-x-2 text-secondary-600">
-      <Input
+      <input
         type="radio"
         name={name}
         value={value}
         id={id}
-        onChange={onChange}
+        {...register(name, validationSchema)}
         className="cursor-pointer w-4 h-4 accent-red-500"
-        checked={checked}
+        checked={watch(name) === value}
       />
       <label htmlFor={id}>{label}</label>
     </div>

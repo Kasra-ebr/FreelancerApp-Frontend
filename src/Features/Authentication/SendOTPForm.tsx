@@ -4,21 +4,19 @@ import TextField from "../../UI/TextField";
 import Loading from "../../UI/Loading";
 
 interface SendOTPFormProps {
-  phoneNumber: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+ register:register, 
   isSendingOtp: boolean;
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
 }
 
-function SendOTPForm({ isSendingOtp, onSubmit, phoneNumber, onChange }: SendOTPFormProps) {
+function SendOTPForm({ isSendingOtp, onSubmit,register }: SendOTPFormProps) {
   return (
     <div className="max-w-md mx-auto p-5 w-full">
       <form className="space-y-8" onSubmit={onSubmit}>
         <TextField
           name="phonenumber"
           label="Please enter your phone number"
-          value={phoneNumber}
-          onChange={onChange}
+           register={register}
         />
         <div className="flex justify-center">
           {isSendingOtp ? (

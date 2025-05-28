@@ -7,28 +7,39 @@ import RadioInput from "../../UI/RadioInput";
 import Loading from "../../UI/Loading";
 import { completeProfile } from "../../Server/authServices";
 import { useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import RadioInputGroup from "../../UI/RadioInputGroup";
+import RHFSelect from "../../UI/RHFSelect";
+import TagsInput from "../../UI/TagsInput";
+import DatePickerField from "../../UI/DatePickerField";
+import useCategories from "../../hooks/useCategories";
 
 function CompleteProfileForm() {
-  const [name, setName] = useState<string>("");
-  const [email, setEmail] = useState<string>("");
-  const [role, setRole] = useState<string>("");
+  const {
+    handleSubmit,
+    register,
+    getValues,
+    watch,
+    formState: { errors },
+  } = useForm();
 
   const navigate = useNavigate();
-
+  const [tags, setTags] = useState<string[]>([]);
+  const [date, setDate] = useState<Date | string | null>(new Date());
+const {categories} = useCategories()
   const { mutateAsync, isPending } = useMutation({
     mutationFn: completeProfile,
   });
 
-  const submitHandler = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const onSubmit = async (data: any) => {
     try {
-      const { message, user } = await mutateAsync({ name, email, role });
+      const { message, user } = await mutateAsync({ ...data, tags, birthDate: date });
+
       toast.success(message);
 
       if (user.status !== 2) {
-        navigate("/");
         toast.error("Please wait to authenticate your profile");
-        return;
+        return navigate("/");
       }
 
       if (user.role === "OWNER") return navigate("/Owner");
@@ -36,7 +47,7 @@ function CompleteProfileForm() {
     } catch (error: any) {
       toast.error(
         error?.response?.data?.message ||
-          "Failed to verify OTP. Please try again."
+          "Failed to verify profile. Please try again."
       );
     }
   };
@@ -44,37 +55,87 @@ function CompleteProfileForm() {
   return (
     <div className="flex justify-center pt-10">
       <div className="w-full sm:max-w-sm">
-        <form className="space-y-8" onSubmit={submitHandler}>
+        <form className="space-y-8" onSubmit={handleSubmit(onSubmit)}>
           <TextField
             label="Name"
             name="name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            errors={errors}
+            validationSchema={{ required: "Name is required" }}
+            register={register}
           />
+
           <TextField
             label="Email"
             name="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            errors={errors}
+            validationSchema={{
+              required: "Email is required",
+              pattern: {
+                value: /^\S+@\S+\.\S+$/,
+                message: "Invalid Email",
+              },
+            }}
+            register={register}
           />
-          <div className="flex items-center justify-center gap-x-8">
-            <RadioInput
-              name="role"
-              value="OWNER"
-              id="OWNER"
-              label="Owner"
-              onChange={(e) => setRole(e.target.value)}
-              checked={role === "OWNER"}
-            />
-            <RadioInput
-              name="role"
-              value="FREELANCER"
-              id="FREELANCER"
-              label="Freelancer"
-              onChange={(e) => setRole(e.target.value)}
-              checked={role === "FREELANCER"}
+
+          <div className="flex flex-col gap-y-4">
+            <div className="flex items-center justify-between gap-x-4">
+              <RadioInput
+                name="role"
+                value="OWNER"
+                id="OWNER"
+                label="Owner"
+                watch={watch}
+                register={register}
+                validationSchema={{
+                  required: "Please choose one of the following",
+                }}
+              />
+
+              <RadioInput
+                name="role"
+                value="FREELANCER"
+                id="FREELANCER"
+                label="Freelancer"
+                watch={watch}
+                register={register}
+                validationSchema={{
+                  required: "Please choose one of the following",
+                }}
+              />
+            </div>
+
+            <RadioInputGroup
+              configs={{
+                name: "gender",
+                validationSchema: { required: "Gender is required" },
+                options: [
+                  { label: "Male", value: "male" },
+                  { label: "Female", value: "female" },
+                ],
+              }}
+              register={register}
+              watch={watch}
+              errors={errors}
             />
           </div>
+
+          <RHFSelect
+            label="Selection"
+            required
+            name="catagory"
+            register={register}
+            options={categories}
+
+          />
+
+          <div>
+            <label className="mb-2 block text-secondary-700">Tags</label>
+            <TagsInput value={tags} onChange={setTags} name="tags" />
+          </div>
+
+          <DatePickerField label="Birthdate" date={date} setDate={setDate} />
+
           <div className="flex justify-center">
             {isPending ? (
               <Loading height={80} width={80} />

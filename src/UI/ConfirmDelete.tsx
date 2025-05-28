@@ -1,10 +1,10 @@
 import React from 'react'
 import Button from './Button'
 
-interface IConfirm = {
+interface IConfirm  {
     resourceName:string,
     onclose:()=> void,
-    disabled:bolean,
+    disabled:boolean,
     onConfirm:()=> void,
 } 
 function ConfirmDelete({resourceName,onclose,disabled,onConfirm}:IConfirm) {
