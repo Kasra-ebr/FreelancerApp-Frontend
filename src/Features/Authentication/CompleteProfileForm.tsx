@@ -10,7 +10,8 @@ import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import RadioInputGroup from "../../UI/RadioInputGroup";
 import RHFSelect from "../../UI/RHFSelect";
-import TagsInput from "../../UI/TagsInput";
+import TagsInput from "@pathofdev/react-tag-input";
+import "@pathofdev/react-tag-input/build/index.css";
 import DatePickerField from "../../UI/DatePickerField";
 import useCategories from "../../hooks/useCategories";
 
@@ -26,14 +27,18 @@ function CompleteProfileForm() {
   const navigate = useNavigate();
   const [tags, setTags] = useState<string[]>([]);
   const [date, setDate] = useState<Date | string | null>(new Date());
-const {categories} = useCategories()
+  const { categories } = useCategories();
   const { mutateAsync, isPending } = useMutation({
     mutationFn: completeProfile,
   });
 
   const onSubmit = async (data: any) => {
     try {
-      const { message, user } = await mutateAsync({ ...data, tags, birthDate: date });
+      const { message, user } = await mutateAsync({
+        ...data,
+        tags,
+        birthDate: date,
+      });
 
       toast.success(message);
 
@@ -126,12 +131,11 @@ const {categories} = useCategories()
             name="catagory"
             register={register}
             options={categories}
-
           />
 
           <div>
             <label className="mb-2 block text-secondary-700">Tags</label>
-            <TagsInput value={tags} onChange={setTags} name="tags" />
+            <TagsInput  value={tags} onChange={setTags} name="tags" />
           </div>
 
           <DatePickerField label="Birthdate" date={date} setDate={setDate} />

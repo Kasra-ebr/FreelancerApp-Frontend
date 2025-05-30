@@ -1,25 +1,20 @@
-import React, { useState } from 'react'
-import Modal from '../../UI/Modal'
-import CreateProjectForm from './CreateProjectForm'
-import Button from '../../UI/Button'
-import { HiOutlinePlus } from 'react-icons/hi'
+import React from 'react';
+import useMoveBack from '../../hooks/useMoveBack';
+import { HiArrowRight } from 'react-icons/hi';
 
-function ProjectHeader() {
-    const [open , setOpen ] = useState(false)
+function ProjectHeader({ project }) {
+  const moveBack = useMoveBack();
+
   return (
-    <div className='flex items-center justify-between mb-8'
->
-    <h1 className='font-black text-secondary-700 text-xl'></h1>
-    <Modal title="Add a new project" open={open} onClose={()=> setOpen(false)}> 
-        <CreateProjectForm onClose={()=>setOpen(false)} />
-    </Modal>
-    <Button onClick={()=> setOpen(true)}
-        className='btn btn-primary flex items-center gap-x-2'>
-            <HiOutlinePlus/>
-            <span>Add New Project</span>
-    </Button>
-</div>
-  )
+    <div className="flex items-center gap-x-4 mb-8">
+      <button onClick={moveBack} className="p-2 hover:bg-gray-100 rounded">
+        <HiArrowRight className="w-5 h-5 text-secondary-500" />
+      </button>
+      <h1 className="font-bold text-secondary-700 text-xl">
+        List of My Request {project?.title}
+      </h1>
+    </div>
+  );
 }
 
-export default ProjectHeader
+export default ProjectHeader;
