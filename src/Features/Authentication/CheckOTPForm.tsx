@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import OTPInput from "react-otp-input";
 import Button from "../../UI/Button";
-import { useNavigate } from "react-router-dom"; // fix import here
+import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { HiArrowRight } from "react-icons/hi";
@@ -10,16 +10,21 @@ import { CiEdit } from "react-icons/ci";
 
 interface CheckOTPFormProps {
   phoneNumber: string;
-  onBack: (step: number) => void;
+  onBack: () => void;
   onReSendOtp: (e: React.FormEvent<HTMLFormElement>) => void;
   otpResponse: { message: string };
 }
 
-function CheckOTPForm({ phoneNumber, onBack, onReSendOtp, otpResponse,}: CheckOTPFormProps) {
+export default function CheckOTPForm({
+  phoneNumber,
+  onBack,
+  onReSendOtp,
+  otpResponse,
+}: CheckOTPFormProps) {
   const [otp, setOtp] = useState<string>("");
-  const [time, setTime] = useState(3);
+  const [time, setTime] = useState(60);
   const navigate = useNavigate();
-  const { mutateAsync } = useMutation({ mutationFn: checkOTP });
+  const { mutateAsync, isPending } = useMutation({ mutationFn: checkOTP });
 
   useEffect(() => {
     if (time === 0) return;
@@ -30,30 +35,44 @@ function CheckOTPForm({ phoneNumber, onBack, onReSendOtp, otpResponse,}: CheckOT
   const checkOTPHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const { message, user } = await mutateAsync({ phoneNumber, otp });
+      // Pass phoneNumber and otp to checkOTP
+      const { message } = await mutateAsync({ phoneNumber, otp });
       toast.success(message);
-
-      if (!user.isActive) return navigate("/complete-profile");
-
-      if (user.status !== 2) {
-        toast.error("Please wait to authenticate your profile");
-        return navigate("/");
-      }
-
-      if (user.role === "OWNER") return navigate("/Owner");
-      if (user.role === "FREELANCER") return navigate("/Freelancer");
+      // Temporary fix: Navigate directly to /complete-profile
+      navigate("/complete-profile");
     } catch (error: any) {
       toast.error(
-        error?.response?.data?.message ||
-          "Failed to verify OTP. Please try again."
+        error?.response?.data?.message || error.message || "Failed to verify OTP. Please try again."
       );
     }
   };
 
+  /* const checkOTPHandler = async (e: React.FormEvent<HTMLFormElement>) => {
+  e.preventDefault();
+  try {
+    const { message, user } = await mutateAsync({ otp });
+    toast.success(message);
+
+    if (!user.isActive) return navigate("/complete-profile");
+
+    if (user.status !== 2) {
+      toast.error("Please wait to authenticate your profile");
+      return navigate("/");
+    }
+
+    if (user.role === "OWNER") return navigate("/Owner");
+    if (user.role === "FREELANCER") return navigate("/Freelancer");
+
+  } catch (error: any) {
+    toast.error(
+      error?.response?.data?.message || "Failed to verify OTP. Please try again."
+    );
+  }
+}; */ 
   return (
     <div>
       <div className="flex justify-end mb-2">
-        <Button onClick={() => onBack(1)}>
+        <Button onClick={() => onBack()}>
           <HiArrowRight className="w-6 h-6 text-secondary-300" />
         </Button>
       </div>
@@ -61,7 +80,7 @@ function CheckOTPForm({ phoneNumber, onBack, onReSendOtp, otpResponse,}: CheckOT
       {otpResponse?.message && (
         <p className="flex items-center gap-2">
           {otpResponse.message}
-          <Button onClick={() => onBack(0)}>
+          <Button onClick={() => onBack()}>
             <CiEdit className="h-6 w-6 text-primary-900" />
           </Button>
         </p>
@@ -83,7 +102,7 @@ function CheckOTPForm({ phoneNumber, onBack, onReSendOtp, otpResponse,}: CheckOT
 
       <form className="space-y-10" onSubmit={checkOTPHandler}>
         <p className="flex justify-center font-bold text-secondary-600 mt-3">
-          Enter the Code
+          Enter the 6-digit Code
         </p>
         <OTPInput
           value={otp}
@@ -91,20 +110,18 @@ function CheckOTPForm({ phoneNumber, onBack, onReSendOtp, otpResponse,}: CheckOT
           numInputs={6}
           renderSeparator={<span></span>}
           renderInput={(props) => <input {...props} />}
-          containerStyle="flex flex-row-reverse gap-x-3 justify-center"
+          containerStyle="flex gap-x-3 justify-center"
           inputStyle={{
-            width: "1.9rem",
+            width: "2rem",
             padding: "0.5rem",
             border: "1px solid #3B82F6",
             borderRadius: "0.5rem",
           }}
         />
-        <Button className="btn" type="submit">
-          Enter
+        <Button className="btn w-full" type="submit" disabled={otp.length < 6 || isPending}>
+          {isPending ? "Verifying..." : "Enter"}
         </Button>
       </form>
     </div>
   );
 }
-
-export default CheckOTPForm;

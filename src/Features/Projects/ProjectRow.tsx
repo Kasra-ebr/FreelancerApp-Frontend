@@ -17,6 +17,7 @@ interface ProjectRowProps {
   index: number;
 }
 
+
 function ProjectRow({ project, index }: ProjectRowProps) {
   const [isEditOpen, setIsEditOpen] = useState<boolean>(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState<boolean>(false);

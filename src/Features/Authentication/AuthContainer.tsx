@@ -1,61 +1,52 @@
 import React, { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
+
 import SendOTPForm from "./SendOTPForm";
 import CheckOTPForm from "./CheckOTPForm";
 import { getOTP } from "../../Server/authServices";
-import { useMutation } from "@tanstack/react-query";
-import toast from "react-hot-toast";
-import { useForm } from "react-hook-form";
 
-function AuthContainer() {
-  const [step, setStep] = useState<number>(2);
+export default function AuthContainer() {
+  const [step, setStep] = useState<number>(1);
+  const [phoneNumber, setPhoneNumber] = useState<string>("");
 
-  const { handleSubmit, register, getValues } = useForm();
-  const {
-    mutateAsync,
-    isPending,
-    data: otpResponse,
-  } = useMutation({ mutationFn: getOTP });
+  const { handleSubmit, register } = useForm<{ phoneNumber: string }>();
+  const { mutateAsync, isPending, data: otpResponse } = useMutation({ mutationFn: getOTP });
 
-  const sendOTPHandler = async (data) => {
+  const sendOTPHandler = async (data: { phoneNumber: string }) => {
     try {
-      const {message} = await mutateAsync(data);
+      const res = await mutateAsync(data);
+      setPhoneNumber(data.phoneNumber);
       setStep(2);
-      toast.success(message);
-    } catch (error: any) {
-      toast.error(
-        error?.response?.data?.message ||
-          "Failed to send OTP. Please try again."
-      );
+      toast.success(res.message);
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message || "Failed to send OTP");
     }
   };
 
   const renderStep = () => {
-    switch (step) {
-      case 1:
-        return (
-          <SendOTPForm
-            onSubmit={handleSubmit(sendOTPHandler)}
-            setStep={setStep}
-            register={register}
-            setPhoneNumber={setPhoneNumber}
-            isSendingOtp={isPending}
-          />
-        );
-      case 2:
-        return (
-          <CheckOTPForm
-            phoneNumber={getValues("phoneNumber")}
-            onBack={() => setStep((s) => s - 1)}
-            onReSendOtp={sendOTPHandler}
-            otpResponse={otpResponse}
-          />
-        );
-      default:
-        return null;
+    if (step === 1) {
+      return (
+        <SendOTPForm
+          onSubmit={handleSubmit(sendOTPHandler)}
+          register={register}
+          isSendingOtp={isPending}
+        />
+      );
     }
+    if (step === 2) {
+      return (
+        <CheckOTPForm
+          phoneNumber={phoneNumber}
+          onBack={() => setStep(1)}
+          onReSendOtp={handleSubmit(sendOTPHandler)}
+          otpResponse={otpResponse || { message: "" }}
+        />
+      );
+    }
+    return null;
   };
 
   return <div className="w-full sm:max-w-sm">{renderStep()}</div>;
 }
-
-export default AuthContainer;

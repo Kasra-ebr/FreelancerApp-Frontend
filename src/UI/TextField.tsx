@@ -7,18 +7,18 @@ interface ITextField {
   required?: boolean;
   register: any;
   validationSchema: any;
-  errors: Record<string, any>;
+  errors?: Record<string, any>;
 }
 
-function TextField({
+const TextField: React.FC<ITextField> = ({
   name,
   label,
   register,
   validationSchema,
   type = "text",
-  required,
-  errors,
-}: ITextField) {
+  required = false,
+  errors = {},
+}) => {
   return (
     <div>
       <label
@@ -34,13 +34,13 @@ function TextField({
         className="textField__input"
         autoComplete="off"
       />
-      {errors[name] && (
+      {errors && errors[name] && (
         <span className="text-error block text-sm mt-2">
-          {errors[name]?.message}
+          {errors[name]?.message || "Invalid input"}
         </span>
       )}
     </div>
   );
-}
+};
 
 export default TextField;

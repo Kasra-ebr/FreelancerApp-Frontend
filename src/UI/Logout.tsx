@@ -18,4 +18,4 @@ function Logout() {
 
 export default Logout;
 
-/* refresh token , access token learn * #s198./ 
+/* refresh token , access token learn * #s198. */

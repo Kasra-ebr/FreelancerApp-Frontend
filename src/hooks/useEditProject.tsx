@@ -5,11 +5,8 @@ import { toast } from "react-hot-toast";
 export default function useEditProject() {
   const queryClient = useQueryClient();
 
-  const {
-    isPending: isEditing,
-    mutate: editProject,
-  } = useMutation({
-    mutationFn: editProjectApi,
+  const { isPending: isEditing, mutate: editProject,} = useMutation(
+    {mutationFn: editProjectApi,
     onSuccess: (data) => {
       toast.success(data.message);
       queryClient.invalidateQueries({

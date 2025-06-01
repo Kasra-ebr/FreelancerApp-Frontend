@@ -2,7 +2,7 @@ import React from 'react'
 import { useParams } from 'react-router'
 import useProject from '../hooks/usePoject'
 import Loading from '../UI/Loading'
-import ProjectHeader from '../Features/Projects/ProjectHeader'
+import ProjectHeader from '../Features/Projects/ProjectsHeader'
 
 function Project() {
   const {isLoading,project} =useProject()

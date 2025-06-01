@@ -1,32 +1,34 @@
 import React, { useState } from "react";
 import { toast } from "react-hot-toast";
 import { useMutation } from "@tanstack/react-query";
-import TextField from "../../UI/TextField";
-import Button from "../../UI/Button";
-import RadioInput from "../../UI/RadioInput";
-import Loading from "../../UI/Loading";
-import { completeProfile } from "../../Server/authServices";
-import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
+
+import TextField from "../../UI/TextField";
+import RadioInput from "../../UI/RadioInput";
 import RadioInputGroup from "../../UI/RadioInputGroup";
 import RHFSelect from "../../UI/RHFSelect";
+import DatePickerField from "../../UI/DatePickerField";
+import Loading from "../../UI/Loading";
+import Button from "../../UI/Button";
+
 import TagsInput from "@pathofdev/react-tag-input";
 import "@pathofdev/react-tag-input/build/index.css";
-import DatePickerField from "../../UI/DatePickerField";
-import useCategories from "../../hooks/useCategories";
 
-function CompleteProfileForm() {
+import useCategories from "../../hooks/useCategories";
+import { completeProfile } from "../../Server/authServices";
+
+export default function CompleteProfileForm() {
   const {
     handleSubmit,
     register,
-    getValues,
     watch,
     formState: { errors },
   } = useForm();
 
   const navigate = useNavigate();
   const [tags, setTags] = useState<string[]>([]);
-  const [date, setDate] = useState<Date | string | null>(new Date());
+  const [date, setDate] = useState<Date | null>(new Date());
   const { categories } = useCategories();
   const { mutateAsync, isPending } = useMutation({
     mutationFn: completeProfile,
@@ -46,13 +48,11 @@ function CompleteProfileForm() {
         toast.error("Please wait to authenticate your profile");
         return navigate("/");
       }
-
       if (user.role === "OWNER") return navigate("/Owner");
       if (user.role === "FREELANCER") return navigate("/Freelancer");
     } catch (error: any) {
       toast.error(
-        error?.response?.data?.message ||
-          "Failed to verify profile. Please try again."
+        error?.response?.data?.message || "Failed to verify profile. Please try again."
       );
     }
   };
@@ -64,15 +64,16 @@ function CompleteProfileForm() {
           <TextField
             label="Name"
             name="name"
-            errors={errors}
-            validationSchema={{ required: "Name is required" }}
             register={register}
+            validationSchema={{ required: "Name is required" }}
+            errors={errors}
           />
 
           <TextField
             label="Email"
             name="email"
-            errors={errors}
+            type="email"
+            register={register}
             validationSchema={{
               required: "Email is required",
               pattern: {
@@ -80,7 +81,7 @@ function CompleteProfileForm() {
                 message: "Invalid Email",
               },
             }}
-            register={register}
+            errors={errors}
           />
 
           <div className="flex flex-col gap-y-4">
@@ -96,7 +97,6 @@ function CompleteProfileForm() {
                   required: "Please choose one of the following",
                 }}
               />
-
               <RadioInput
                 name="role"
                 value="FREELANCER"
@@ -126,16 +126,17 @@ function CompleteProfileForm() {
           </div>
 
           <RHFSelect
-            label="Selection"
+            label="Category"
+            name="category"
             required
-            name="catagory"
             register={register}
             options={categories}
+            errors={errors}
           />
 
           <div>
             <label className="mb-2 block text-secondary-700">Tags</label>
-            <TagsInput  value={tags} onChange={setTags} name="tags" />
+            <TagsInput tags={tags} onChange={setTags} />
           </div>
 
           <DatePickerField label="Birthdate" date={date} setDate={setDate} />
@@ -154,5 +155,3 @@ function CompleteProfileForm() {
     </div>
   );
 }
-
-export default CompleteProfileForm;
