@@ -8,7 +8,7 @@ function useProposals() {
     queryFn: getproposalsApi,
   });
   const { proposals } = data || {};
-  return { data, isLoading };
+  return { proposals, isLoading };
 }
 
 export default useProposals;

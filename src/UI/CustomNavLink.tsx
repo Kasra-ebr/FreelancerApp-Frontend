@@ -1,5 +1,4 @@
-import { NavLink } from "react-router";
-
+import { NavLink } from "react-router-dom";
 interface CustomNavLinkProps {
   to: string;
   children: React.ReactNode;
@@ -13,14 +12,12 @@ function CustomNavLink({ children, to }: CustomNavLinkProps) {
     <NavLink
       to={to}
       className={({ isActive }) =>
-        isActive
-          ? `${baseClass} bg-blue-200 text-blue-800`
-          : `${baseClass} text-gray-600 hover:bg-blue-100 hover:text-blue-800`
+        `${baseClass} ${isActive ? 'bg-blue-200 text-blue-800' : 'text-gray-600 hover:bg-blue-100 hover:text-blue-800'}`
       }
     >
       {children}
     </NavLink>
   );
-  
+}
 
-  export default CustomNavLink
+export default CustomNavLink;

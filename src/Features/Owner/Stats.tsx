@@ -3,16 +3,16 @@ import Stat from "./Stat";
 import { HiCollection, HiCurrencyDollar, HiOutlineViewGrid } from "react-icons/hi";
 
 interface IProjectsProps {
-  projects: any;
+  projects: any[] | null | undefined;
 }
 
 function Stats({ projects }: IProjectsProps) {
-  const numOfProjects = projects.length;
-  const numOfAcceptedProjects = projects.filter((p) => p.status === 2).length;
-  const totalProposals = projects.reduce(
-    (acc, curr) => acc + curr.proposals.length,
+  const numOfProjects = projects?.length || 0;
+  const numOfAcceptedProjects = projects?.filter((p) => p.status === 2).length || 0;
+  const totalProposals = projects?.reduce(
+    (acc, curr) => acc + (curr.proposals?.length || 0),
     0
-  );
+  ) || 0;
 
   return (
     <div className="grid grid-cols-2 gap-8">

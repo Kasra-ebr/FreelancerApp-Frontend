@@ -23,16 +23,16 @@ interface ProposalRowProps {
 
 const statusStyle = [
   {
-    label: "Decline"
-    className: "badge--danger"
+    label: "Decline",
+    className: "badge--danger",
   },
     {
-    label: "Please Wait"
-    className: "badge--secondary"
+    label: "Please Wait",
+    className: "badge--secondary",
   },
     {
-    label: "Accepted"
-    className: "badge--sucess"
+    label: "Accepted",
+    className: "badge--sucess",
   }
 ]
 
