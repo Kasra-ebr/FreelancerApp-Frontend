@@ -3,6 +3,7 @@ import truncateText from "../../utils/truncateText";
 import Table from "../../utils/Table";
 import Modal from "../../UI/Modal";
 import { Button } from "@headlessui/react";
+import ChangeProposalStatus from "./ChangeProposalStatus";
 
 interface Proposal {
   id: string;

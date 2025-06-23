@@ -10,21 +10,20 @@ import CreateProjectForm from "./CreateProjectForm";
 import ToggleProjectStatus from "./ToggleProjectStatus";
 import truncateText from "../../utils/truncateText";
 import Table from "../../utils/Table";
-import { Link } from "react-router";
+import { Link } from "react-router-dom";
 
 interface ProjectRowProps {
   project: any;
   index: number;
 }
 
-
 function ProjectRow({ project, index }: ProjectRowProps) {
-  const [isEditOpen, setIsEditOpen] = useState<boolean>(false);
-  const [isDeleteOpen, setIsDeleteOpen] = useState<boolean>(false);
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const { removeProject } = useRemoveProject();
+
   return (
-    <>
-      <Table.Row />
+    <Table.Row>
       <td>{index + 1}</td>
       <td>{truncateText(project.title, 30)}</td>
       <td>{project.category.title}</td>
@@ -45,51 +44,47 @@ function ProjectRow({ project, index }: ProjectRowProps) {
       </td>
       <td>
         <div className="flex justify-center gap-x-4">
-          <>
-            <Button onClick={() => setIsEditOpen(true)}>
-              <TbPencilMinus className="w-5 h-5 text-primary-900" />
-            </Button>
-            <Modal
-              title={`Edit ${project.title}`}
-              open={isEditOpen}
+          <Button onClick={() => setIsEditOpen(true)}>
+            <TbPencilMinus className="w-5 h-5 text-primary-900" />
+          </Button>
+          <Modal
+            title={`Edit ${project.title}`}
+            open={isEditOpen}
+            onClose={() => setIsEditOpen(false)}
+          >
+            <CreateProjectForm
+              projectToEdit={project}
               onClose={() => setIsEditOpen(false)}
-            >
-              <CreateProjectForm
-                projectToEdit={project}
-                onClose={() => setIsEditOpen(false)}
-              />
-            </Modal>
-          </>
-          <>
-            <Button onClick={() => setIsDeleteOpen(true)}>
-              <HiOutlineTrash className="w-5 h-5 text-primary-900" />
-            </Button>
-            <Modal
-              title={`Delete ${project.title}`}
-              open={isEditOpen}
-              onClose={() => setIsEditOpen(false)}
-            >
-              <ConfirmDelete
-                resourceName={project.title}
-                onConfirm={() =>
-                  removeProject(project._id, {
-                    onSuccess: () => setIsDeleteOpen(false),
-                  })
-                }
-                disabled={false}
-                onClose={() => setIsDeleteOpen(false)}
-              />
-            </Modal>
-          </>
+            />
+          </Modal>
+
+          <Button onClick={() => setIsDeleteOpen(true)}>
+            <HiOutlineTrash className="w-5 h-5 text-primary-900" />
+          </Button>
+          <Modal
+            title={`Delete ${project.title}`}
+            open={isDeleteOpen}
+            onClose={() => setIsDeleteOpen(false)}
+          >
+            <ConfirmDelete
+              resourceName={project.title}
+              onConfirm={() =>
+                removeProject(project._id, {
+                  onSuccess: () => setIsDeleteOpen(false),
+                })
+              }
+              disabled={false}
+              onClose={() => setIsDeleteOpen(false)}
+            />
+          </Modal>
         </div>
       </td>
       <td>
         <Link to={project.id} className="flex justify-center">
-                <HiEye className="2-5 h-5 text-primary-800"/>
+          <HiEye className="w-5 h-5 text-primary-800" />
         </Link>
       </td>
-      <Table.Row />
-    </>
+    </Table.Row>
   );
 }
 

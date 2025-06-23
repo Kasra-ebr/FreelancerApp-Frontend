@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import truncateText from "../../utils/truncateText";
 import Table from "../../utils/Table";
 import type { IProposal } from "./ProposalTable";
+import { Button } from "@headlessui/react";
 interface IProposalRow {
   proposal: IProposal;
   index: number;
@@ -26,6 +27,7 @@ function ProposalRow({ proposal, index }:IProposalRow ) {
       className: "badge--sucess ",
     },
   ];
+
   return (
     <Table.Row>
       <td>{index + 1}</td>

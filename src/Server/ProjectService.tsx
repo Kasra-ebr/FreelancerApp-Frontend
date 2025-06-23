@@ -44,3 +44,8 @@ export async function logoutApi() {
   const { data } = await http.post("/user/logout");
   return data;
 }
+
+export async function geProjectApi (qs) {
+  const {data } = await http.get(`/project/list/${qs}`);
+  return data
+} 
